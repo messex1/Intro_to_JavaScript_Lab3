@@ -1,41 +1,56 @@
-// Reference variable to the div element with the id of resources
 const resourcesDiv = document.getElementById('resources');
-
-// Reference variable to button with id show-resources
 const showResourcesButton = document.getElementById('show-resources');
+const elementsWithHoverEffect = document.querySelectorAll('.list-group-item');
+const primaryButtons = document.querySelectorAll('.btn-primary'); // Grab all primary buttons
 
-// Select all div elements with class 'list-group-item', as well as other elements that need the I-Beam hover effect removed
-const elementsWithHoverEffect = document.querySelectorAll('.list-group-item, .p, .h4, .strong, .h1');
-
-// Event handler function for the button that removes the class d-none from the div element and makes links bold
 function showResources() {
-    // Remove the 'd-none' class from the div element
     resourcesDiv.classList.remove('d-none');
-
-    // Select all links inside the div and make them bold by adding 'fw-bold' class
     const links = resourcesDiv.querySelectorAll('a');
     links.forEach(link => {
         link.classList.add('fw-bold');
     });
 }
 
-// Add an event listener on the button that listens to the click event and call showResources function
+// Big button for body menu
 showResourcesButton.addEventListener('click', showResources);
 
-// Event handler function for mouseover event to make the text within the hovered div bold
+// Bold event listeners for mouseover and mouseout events
 function mouseoverHandler(e) {
-    // Add the 'fw-bold' class to the text within the hovered div
     e.currentTarget.classList.add('fw-bold');
 }
 
-// Event handler function for mouseout event to remove bold text
 function mouseoutHandler(e) {
-    // Remove the 'fw-bold' class from the text within the div
     e.currentTarget.classList.remove('fw-bold');
 }
 
-// Add event listeners to each div element to handle mouseover and mouseout events independently
+// Make mouseover/out effect separate for each element
 elementsWithHoverEffect.forEach(element => {
     element.addEventListener('mouseover', mouseoverHandler);
     element.addEventListener('mouseout', mouseoutHandler);
+});
+
+// Italic event listener for click event on primary buttons
+primaryButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+        // Stop the click event from propagating to the parent
+        e.stopPropagation();
+
+        // Check if the clicked element is a primary button
+        if (e.target.classList.contains('btn-primary')) {
+            // Find the closest '.list-group-item' parent and italicize its content
+            let listItem = e.target.closest('.list-group-item');
+            if (listItem) {
+                // Target only the direct text nodes of the list item
+                Array.from(listItem.childNodes).forEach(node => {
+                    if (node.nodeType === 3) { // Node type 3 is a text node
+                        node.textContent = node.textContent;
+                        let italicSpan = document.createElement('span');
+                        italicSpan.classList.add('fst-italic');
+                        italicSpan.textContent = node.textContent;
+                        node.parentNode.replaceChild(italicSpan, node);
+                    }
+                });
+            }
+        }
+    });
 });
